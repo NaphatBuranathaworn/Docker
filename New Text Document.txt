@@ -1,0 +1,43 @@
+ssh: 172.17.0.1
+
+# local ip docker toolbox
+192.168.99.100
+
+forward by nginx : http://10.186.206.120:8099/
+
+# monitor ngrok
+http://192.168.99.100:4040/inspect/http
+
+# start docker jenkins2 
+docker run -p 8080:8080 -p 50000:50000 --name=jenkins-master --volumes-from=jenkins-data -d jenkins2
+
+# ngrok คือ tool ที่ช่วยให้ localhost สามารถเชื่อมต่อผ่าน internet ได้ (ปกติ localhost จะได้แค่ intranet เท่านั้น)
+# connect jenkins2 with ngrok
+docker run --rm -it --link jenkins-master wernight/ngrok ngrok http jenkins-master:8080
+
+# github webhook
+ http://b3dfdb31.ngrok.io/github-webhook
+
+
+## run image endpoint port 80 => forward port 3000
+ docker run -d -p 8080:3000 --name rssmspareparts_con rssm/spareparts
+
+  docker run -d -p 8080:3000 --net myngroknet --name rssmspareparts_con rssm/spareparts
+
+ docker run --rm -it --link rssmspareparts_con wernight/ngrok ngrok http rssmspareparts_con:8080
+docker run -d -p 4040:4040 –-net myngroknet –-name ngrok wernight/ngrok ngrok http rssmspareparts_con:8080
+
+ docker run --rm -it --link web_service_container wernight/ngrok ngrok http web_service_container:80
+ docker run -d -p 4040:4040 –net myngroknet –name ngrok wernight/ngrok ngrok http json-server:8080
+ docker run -it –rm -p 8080:8080 -v “$PWD”:/usr/src/app –net myngroknet –name json-server node:10 bash
+
+ docker run -d -p 4040:4040 –-net myngroknet –-name ngrok wernight/ngrok ngrok http www:80
+
+ docker run -d -p 4040:4040 –net myngroknet –name ngrok wernight/ngrok ngrok http json-server:8080
+ docker run -d -p 4040:4040 –-net myngroknet –-name ngrok wernight/ngrok ngrok http rssmspareparts_con:8080
+
+ docker run -d -p 4040:4040 –net myngroknet –name ngrok wernight/ngrok ngrok http www:80
+
+
+ docker run -d -p 80 –-net myngroknet –-name www nginx
+ docker run -d -p 80 --net myngroknet --name www nginx
